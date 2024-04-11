@@ -440,7 +440,9 @@ void btn5_pressAction(void)
 {
   if (btn5.justPressed()) {
     Serial.println("btn5 button just pressed");
+    digitalWrite(firstScreenCS, LOW);
     tft.fillScreen(TFT_RED);
+    digitalWrite(firstScreenCS, HIGH);
     lessonScreen();
   }
 }
@@ -467,7 +469,10 @@ void btn6_pressAction(void)
 {
   if (btn6.justPressed()) {
     Serial.println("btn6 button just pressed");
-    btn6.drawSmoothButton(true);
+    digitalWrite(firstScreenCS, LOW);
+    tft.fillScreen(TFT_YELLOW);
+    digitalWrite(firstScreenCS, HIGH);
+    lessonScreen();
   }
 }
 
@@ -493,7 +498,10 @@ void btn7_pressAction(void)
 {
   if (btn7.justPressed()) {
     Serial.println("btn7 button just pressed");
-    btn7.drawSmoothButton(true);
+    digitalWrite(firstScreenCS, LOW);
+    tft.fillScreen(TFT_GREENYELLOW);
+    digitalWrite(firstScreenCS, HIGH);
+    lessonScreen();
   }
 }
 
@@ -519,7 +527,10 @@ void btn8_pressAction(void)
 {
   if (btn8.justPressed()) {
     Serial.println("btn8 button just pressed");
-    btn8.drawSmoothButton(true);
+    digitalWrite(firstScreenCS, LOW);
+    tft.fillScreen(TFT_ORANGE);
+    digitalWrite(firstScreenCS, HIGH);
+    lessonScreen();
   }
 }
 
