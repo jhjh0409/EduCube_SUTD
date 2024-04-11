@@ -51,6 +51,11 @@ uint8_t lsnCount = sizeof(lsn) / sizeof(lsn[0]);
 const int screenWidth = 240; // Screen width
 const int screenHeight = 320; // Screen height
 
+bool disp = false;
+bool hasRun = false;
+int sleepTime = 10000; // 10000ms = 
+int timer = 0;
+
 const int countdownMinutes = 1; // Countdown duration in minutes
 unsigned long previousMillis = 0;
 unsigned long interval = 1000; // Update interval in milliseconds
@@ -97,9 +102,14 @@ void setup() {
   digitalWrite(firstScreenCS, HIGH);
 
   setMPU6050();
+
+  Serial.println("");
+  delay(100);
+  tft.sleep(disp);
 }
 
 void loop() {
+  timer++;
   digitalWrite(secondScreenCS, LOW);
   static uint32_t scanTime = millis();
   uint16_t t_x = 9999, t_y = 9999; // To store the touch coordinates
@@ -108,29 +118,6 @@ void loop() {
   /* Get new sensor events with the readings */
   sensors_event_t a, g, temp;
   mpu.getEvent(&a, &g, &temp);
-
-  /* Print out the values */
-  Serial.print("Acceleration X: ");
-  Serial.print(a.acceleration.x);
-  Serial.print(", Y: ");
-  Serial.print(a.acceleration.y);
-  Serial.print(", Z: ");
-  Serial.print(a.acceleration.z);
-  Serial.println(" m/s^2");
-
-  Serial.print("Rotation X: ");
-  Serial.print(g.gyro.x);
-  Serial.print(", Y: ");
-  Serial.print(g.gyro.y);
-  Serial.print(", Z: ");
-  Serial.print(g.gyro.z);
-  Serial.println(" rad/s");
-
-  Serial.print("Temperature: ");
-  Serial.print(temp.temperature);
-  Serial.println(" degC");
-
-  Serial.println("");
 
   // Scan keys every 50ms at most
   if (millis() - scanTime >= 50) {
@@ -211,6 +198,21 @@ void loop() {
     }
   digitalWrite(firstScreenCS, HIGH);
   digitalWrite(secondScreenCS, HIGH);
+
+  if (hasRun == false) {
+    checkDisp(a.acceleration.y);
+  }
+
+  // Display goes to sleep after count of 10000
+  if (timer > sleepTime and a.acceleration.y <= -8) {
+    timer = 0;
+    disp = false;
+    hasRun = false;
+    tft.sleep(disp);
+  }
+
+  Serial.print(timer);
+  Serial.print("\n");
 }
 
 // Calibrating Touch Function
@@ -758,5 +760,14 @@ void setMPU6050() {
   case MPU6050_BAND_5_HZ:
     Serial.println("5 Hz");
     break;
+  }
+}
+
+void checkDisp(float x) {
+  if (x > -8) {
+    disp = true;
+    Serial.print("screen waking");
+    hasRun = true;
+    setup();
   }
 }
