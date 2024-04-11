@@ -49,7 +49,6 @@ unsigned long interval = 1000; // Update interval in milliseconds
 
 char* mode = "menu";
 int breakRun = 0;
-int backStatus = 0;
 
 void btn1_pressAction(void)
 {
@@ -131,11 +130,14 @@ void btn3_releaseAction(void)
   }
 }
 
-/*void btn4_pressAction(void)
+void btn4_pressAction(void)
 {
   if (btn4.justPressed()) {
     Serial.println("Fourth button just pressed");
-    btn4.drawSmoothButton(true);
+    homeScreen();
+    breakRun = 0;
+    previousMillis = 0;
+    //remainingMinutes = countdownMinutes;
   }
 }
 
@@ -155,7 +157,7 @@ void btn4_releaseAction(void)
       //btn3.drawSmoothButton(!btn3.getState());
     }
   }
-}*/
+}
 
 void drawButtons() {
   btn1.drawSmoothButton(false, 2, TFT_BLACK);
@@ -198,9 +200,9 @@ void initButtons() {
   btn3.setReleaseAction(btn3_releaseAction);
   btn3.drawSmoothButton(false, 2, TFT_BLACK); // 3 is outline width, TFT_BLACK is the surrounding background colour for anti-aliasing
 
-  /*btn4.initButtonUL(0, 0, 60, 35, TFT_BLACK, TFT_BLACK, TFT_WHITE, "Back", 2);
+  btn4.initButtonUL(0, 0, 60, 35, TFT_BLACK, TFT_BLACK, TFT_WHITE, "Back", 2);
   btn4.setPressAction(btn4_pressAction);
-  btn4.setReleaseAction(btn4_releaseAction);*/
+  btn4.setReleaseAction(btn4_releaseAction);
 }
 
 void setup() {
@@ -250,15 +252,24 @@ void loop() {
   if (millis() - scanTime >= 50) {
     // Pressed will be set true if there is a valid touch on the screen
     bool pressed = tft.getTouch(&t_x, &t_y);
+    bool goBack = false;
 
     // If mode not on menu, set bool to false
     if (mode != "menu") {
       pressed = false;
-      // Configure back button if mode is not on
-      /*if (backStatus == 0) {
-        btn4.drawSmoothButton(false, 2, TFT_BLACK); // 3 is outline width, TFT_BLACK is the surrounding background colour for anti-aliasing
-        backStatus = 1;
-      }*/
+      goBack = true;
+    }
+
+    if (goBack) {
+        if (btn4.contains(t_x, t_y)) {
+          btn4.press(true);
+          btn4.pressAction();
+        }
+      }
+      
+    else {
+      btn4.press(false);
+      btn4.releaseAction();
     }
 
     for (uint8_t b = 0; b < buttonCount; b++) {
@@ -283,6 +294,8 @@ void loop() {
       if (breakRun == 0) {
         breakMode();
         breakRun = 1;
+        btn4.drawSmoothButton(false, 2, TFT_BLACK); // 3 is outline width, TFT_BLACK is the surrounding background colour for anti-aliasing
+        tft.setTextSize(5);
       }
       timerCount();
     }
