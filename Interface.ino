@@ -53,8 +53,16 @@ const int screenHeight = 320; // Screen height
 
 bool disp = false;
 bool hasRun = false;
-int sleepTime = 10000; // 10000ms = 
+int sleepTime = 10000; // Units in ms
 int timer = 0;
+
+int tolerance = 5;
+char* hor[4] = {"A", "B", "F", "E"};
+char* ver[4] = {"A", "C", "F", "D"};
+uint16_t hcolors[4] = {TFT_RED, TFT_GREEN, TFT_VIOLET, TFT_BLUE,};
+uint16_t vcolors[4] = {TFT_RED, TFT_YELLOW, TFT_VIOLET, TFT_ORANGE,};
+int horstate = 0;
+int verstate = 0;
 
 const int countdownMinutes = 1; // Countdown duration in minutes
 unsigned long previousMillis = 0;
@@ -63,6 +71,7 @@ unsigned long interval = 1000; // Update interval in milliseconds
 char* mode = "menu";
 int breakRun = 0;
 int lessonRun = 0;
+int quizRun = 0;
 
 void setup() {
   // Use serial port
@@ -196,15 +205,62 @@ void loop() {
         lessonRun = 1;
       }
     }
+
+      // Check screen is on Lesson Mode
+    if (mode == "quiz") {
+      if (quizRun == 0)
+      {
+        // Draw Buttons
+        btn4.drawSmoothButton(false, 2, TFT_BLACK);
+        quizRun = 1;
+        dispOptHor(horstate);
+      }
+      if (g.gyro.z >= tolerance) {
+        if (horstate - 1 < 0) {
+          horstate = 3;
+        }
+        else{
+          horstate = horstate - 1;
+        }
+        dispOptHor(horstate);
+      }
+      else if (g.gyro.z <= -tolerance) {
+        if (horstate + 1 > 3) {
+          horstate = 0;
+        }
+        else{
+          horstate = horstate + 1;
+        }
+        dispOptHor(horstate);
+      }
+      if (g.gyro.y >= tolerance) {
+        if (verstate - 1 < 0) {
+          verstate = 3;
+        }
+        else{
+          verstate = verstate - 1;
+        }
+        dispOptVer(verstate);
+      }
+      else if (g.gyro.y <= -tolerance) {
+        if (verstate + 1 > 3) {
+          verstate = 0;
+        }
+        else{
+          verstate = verstate + 1;
+        }
+        dispOptVer(verstate);
+      }
+    }
   digitalWrite(firstScreenCS, HIGH);
   digitalWrite(secondScreenCS, HIGH);
 
   if (hasRun == false) {
     checkDisp(a.acceleration.y);
   }
-
+  
   // Display goes to sleep after count of 10000
-  if (timer > sleepTime and a.acceleration.y <= -8) {
+  if (timer > sleepTime and a.acceleration.y >= -0.5) {
     timer = 0;
     disp = false;
     hasRun = false;
@@ -364,6 +420,8 @@ void btn1_pressAction(void)
   if (btn1.justPressed()) {
     Serial.println("First button pressed");
     btn1.drawSmoothButton(true);
+    mode = "quiz";
+    tft.fillScreen(TFT_BLACK);
   }
 }
 
@@ -448,6 +506,7 @@ void btn4_pressAction(void)
     homeScreen();
     breakRun = 0;
     lessonRun = 0;
+    quizRun = 0;
     previousMillis = 0;
   }
 }
@@ -764,10 +823,32 @@ void setMPU6050() {
 }
 
 void checkDisp(float x) {
-  if (x > -8) {
+  if (x < -0.5) {
     disp = true;
     Serial.print("screen waking");
     hasRun = true;
     setup();
   }
+}
+
+void dispOptHor(int option) {
+  digitalWrite(firstScreenCS, LOW);
+  tft.fillScreen(hcolors[option]);
+  tft.setRotation(1);
+  tft.setCursor(150, 120);
+  tft.setTextSize(5);
+  tft.setTextColor(TFT_WHITE);
+  tft.println(hor[option]);
+  digitalWrite(firstScreenCS, HIGH);
+}
+
+void dispOptVer(int option) {
+  digitalWrite(firstScreenCS, LOW);
+  tft.fillScreen(vcolors[option]);
+  tft.setRotation(1);
+  tft.setCursor(150, 120);
+  tft.setTextSize(5);
+  tft.setTextColor(TFT_WHITE);
+  tft.println(ver[option]);
+  digitalWrite(firstScreenCS, HIGH);
 }
