@@ -45,3 +45,7 @@ Our Prototype and Site Model
 
 ## Prototype Video
 https://www.youtube.com/watch?v=aFoYQ53OEtc
+
+## Poster
+![Poster-01](https://github.com/jhjh0409/EduCube_SUTD/assets/124416920/990eea48-a303-4c08-ab1e-2ef0947f9f63)
+
