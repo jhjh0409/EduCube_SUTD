@@ -17,10 +17,12 @@ homeworks.
 
 In order to address these problem statements, we came up with Educube as a solution.
 
-3D Visualised Render of EduCube
+*3D Visualised Render of EduCube*
+
 ![Shot2_0225](https://github.com/jhjh0409/EduCube_SUTD/assets/124416920/335727c6-e27c-490d-94fb-e12795a99a3e)
 
-Our Prototype and Site Model
+*Our Prototype and Site Model*
+
 ![Cool Pic 1](https://github.com/jhjh0409/EduCube_SUTD/assets/124416920/e9ff4046-f0b8-49ae-b093-7bcffb401882)
 
 
