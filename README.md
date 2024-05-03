@@ -28,8 +28,8 @@ In order to address these problem statements, we came up with Educube as a solut
 
 ## Project Done By: 
 - Angeline Halim
-- Jatlyson Ang
-- Brandon Kim
+- Jatlyson Ang - https://github.com/jatlys
+- Brandon Kim - https://github.com/brandonkimchi
 - Nicole Ng
 - Tok Jing Huan - https://github.com/jhjh0409
 
